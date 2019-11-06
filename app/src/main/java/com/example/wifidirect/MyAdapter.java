@@ -1,14 +1,21 @@
 package com.example.wifidirect;
 
+import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.wifidirect.activities.MainActivity;
+
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private String[] mDataset;
-
+    Context context;
+    View.OnClickListener onClick;
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
@@ -22,8 +29,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(String[] myDataset) {
+    public MyAdapter(String[] myDataset, final View.OnClickListener onClick) {
+
         mDataset = myDataset;
+
+        this.onClick = onClick;
+
     }
 
     // Create new views (invoked by the layout manager)
@@ -32,7 +43,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                                                      int viewType) {
         // create a new view
         TextView v = (TextView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.support_simple_spinner_dropdown_item, parent, false);
+                .inflate(R.layout.listitem, parent, false);
+        v.setOnClickListener(onClick);
         MyViewHolder vh = new MyViewHolder(v);
         return vh;
     }

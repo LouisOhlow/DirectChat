@@ -19,7 +19,7 @@ public class MainActivityController {
 
     private Context context;
 
-    private ArrayList<WifiP2pDevice> peers;
+    public ArrayList<WifiP2pDevice> peers;
 
     private String TAG = "MainActivityController: ";
 
@@ -90,7 +90,8 @@ public class MainActivityController {
         }
     };
 
-    public void connectToPeer(WifiP2pDevice peer, WifiP2pManager manager, WifiP2pManager.Channel channel){
+    public void connectToPeer(int itemPosition, WifiP2pManager manager, WifiP2pManager.Channel channel){
+        WifiP2pDevice peer = peers.get(itemPosition);
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = peer.deviceAddress;
         config.wps.setup = WpsInfo.PBC;

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.wifidirect.BroadcastReceiver;
 import com.example.wifidirect.MainActivityController;
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
     private final IntentFilter intentFilter = new IntentFilter();
 
+    View.OnClickListener listItemOnClick;
+
     private MainActivityController mMainActivityController;
 
     private WifiP2pManager.Channel channel;
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver receiver;
 
     public MyAdapter mAdapter;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,14 +84,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(){
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
 
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
         /* specify an adapter (see also next example) */
-        mAdapter = new MyAdapter(mMainActivityController.getPeerList());
+
+        mAdapter = new MyAdapter(mMainActivityController.getPeerList(), listItemOnClick);
         receiver = new BroadcastReceiver(manager, channel, this, mAdapter, mMainActivityController.peerListListener);
         recyclerView.setAdapter(mAdapter);
     }
@@ -103,6 +108,15 @@ public class MainActivity extends AppCompatActivity {
                 mAdapter.update(mMainActivityController.getPeerList());
             }
         });
+
+        listItemOnClick = new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                int itemPosition = recyclerView.getChildLayoutPosition(v);
+                mMainActivityController.connectToPeer(itemPosition, manager, channel);
+            }
+        };
+
     }
 }
 
