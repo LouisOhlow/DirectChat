@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.example.wifidirect.BroadcastReceiver;
 import com.example.wifidirect.MainActivityController;
@@ -36,18 +36,24 @@ public class MainActivity extends AppCompatActivity {
     public MyAdapter mAdapter;
     private RecyclerView recyclerView;
 
+    public TextView p2pInfoText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMainActivityController = MainActivityController.getSC(MainActivity.this);
+        // create the Singleton as the MVC Controller
+        mMainActivityController = MainActivityController.getSC();
+        mMainActivityController.setMainActivity(this);
 
+        //the WifiP2PManager class
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 
         channel = manager.initialize(this, getMainLooper(), null);
 
         mMainActivityController.turnOnWifi();
+        p2pInfoText = findViewById(R.id.p2pInfo);
         initButtons();
         setupRecyclerView();
         setupIntents();
@@ -56,8 +62,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        //init the BR to receive Broadcasts for WifiDirect
         receiver = new BroadcastReceiver(manager, channel, this, mAdapter, mMainActivityController.peerListListener);
         registerReceiver(receiver, intentFilter);
+
         Log.d(TAG, "startSearch - onResume");
 
     }
@@ -65,11 +74,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        //Disable receiver
         unregisterReceiver(receiver);
         Log.d(TAG, "startSearch - onPause");
     }
 
     private void setupIntents(){
+        //set up the Intenfilter to which the BroadcastReceiver should listen to
+
         // Indicates a change in the Wi-Fi P2P status.
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
 
@@ -84,14 +97,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(){
+        //init the recycler view to display listItems
         recyclerView = findViewById(R.id.recyclerView);
 
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        /* specify an adapter (see also next example) */
-
+        //specifies an Adapter for the RecyclerView
         mAdapter = new MyAdapter(mMainActivityController.getPeerList(), listItemOnClick);
         receiver = new BroadcastReceiver(manager, channel, this, mAdapter, mMainActivityController.peerListListener);
         recyclerView.setAdapter(mAdapter);
@@ -109,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //The OnClick method for the listItems in the RecyclerView
         listItemOnClick = new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
