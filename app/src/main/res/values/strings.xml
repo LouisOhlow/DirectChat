@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">WifiDirect</string>
     <string name="refresh">refresh</string>
+    <string name="title_activity_chat_test_view">ChatTestView</string>
 </resources>

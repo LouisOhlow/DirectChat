@@ -19,6 +19,8 @@ import com.example.wifidirect.MainActivityController;
 import com.example.wifidirect.MyAdapter;
 import com.example.wifidirect.R;
 
+import java.net.ServerSocket;
+
 public class MainActivity extends AppCompatActivity {
 
     private String TAG = "Mainactivity: ";
@@ -141,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openLoadDialog(){
-        loadingDialog.show(getSupportFragmentManager(), "example Dialog");
+        loadingDialog.show(getSupportFragmentManager(), "load Dialog");
     }
 }
 

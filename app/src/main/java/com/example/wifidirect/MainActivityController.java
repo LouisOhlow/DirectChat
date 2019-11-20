@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.wifidirect.activities.MainActivity;
 
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -131,8 +132,13 @@ public class MainActivityController {
 
                 if(p2PInfo.groupFormed && p2PInfo.isGroupOwner){
                     mainActivity.p2pInfoText.setText("Host");
+                    ServerSocketManager serverSocketManager = new ServerSocketManager();
+                    serverSocketManager.run();
+
                 }else if(p2PInfo.groupFormed){
                     mainActivity.p2pInfoText.setText("Client");
+                    ClientSocketManager client = new ClientSocketManager(groupOwnerAddress);
+                    client.run();
                 }
 
             }
@@ -147,4 +153,9 @@ public class MainActivityController {
         return peerNames;
     }
 
+    public void connectServer() {
+
+
+
+    }
 }
