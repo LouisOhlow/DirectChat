@@ -53,6 +53,8 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
 
                 if(networkInfo.isConnected()){
                     manager.requestConnectionInfo(channel, mMainActivityController.connectionInfoListener);
+                    Toast.makeText(context, "device connected", Toast.LENGTH_LONG).show();
+
                 }else{
                             Toast.makeText(context, "device disconnected", Toast.LENGTH_LONG).show();
                 }

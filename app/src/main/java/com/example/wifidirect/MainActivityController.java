@@ -127,7 +127,7 @@ public class MainActivityController {
     WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener(){
             @Override
             public void onConnectionInfoAvailable(WifiP2pInfo p2PInfo){
-                final InetAddress griupOwnerAddress = p2PInfo.groupOwnerAddress;
+                final InetAddress groupOwnerAddress = p2PInfo.groupOwnerAddress;
 
                 if(p2PInfo.groupFormed && p2PInfo.isGroupOwner){
                     mainActivity.p2pInfoText.setText("Host");

@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.wifidirect.BroadcastReceiver;
+import com.example.wifidirect.LoadingDialog;
 import com.example.wifidirect.MainActivityController;
 import com.example.wifidirect.MyAdapter;
 import com.example.wifidirect.R;
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
     public TextView p2pInfoText;
 
+    LoadingDialog loadingDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +54,14 @@ public class MainActivity extends AppCompatActivity {
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 
         channel = manager.initialize(this, getMainLooper(), null);
+        mMainActivityController.startSearch(channel, manager);
 
         mMainActivityController.turnOnWifi();
         p2pInfoText = findViewById(R.id.p2pInfo);
+
+        loadingDialog = new LoadingDialog();
+        loadingDialog.setCancelable(false);
+
         initButtons();
         setupRecyclerView();
         setupIntents();
@@ -116,8 +124,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                mMainActivityController.startSearch(channel, manager);
-
                 mAdapter.update(mMainActivityController.getPeerList());
             }
         });
@@ -128,9 +134,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(final View v) {
                 int itemPosition = recyclerView.getChildLayoutPosition(v);
                 mMainActivityController.connectToPeer(itemPosition, manager, channel);
+                openLoadDialog();
             }
         };
 
+    }
+
+    public void openLoadDialog(){
+        loadingDialog.show(getSupportFragmentManager(), "example Dialog");
     }
 }
 
