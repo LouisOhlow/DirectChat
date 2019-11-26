@@ -7,6 +7,7 @@ import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
+import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 import android.widget.TextView;
@@ -28,9 +29,30 @@ public class MainActivityController {
 
     public ArrayList<WifiP2pDevice> peers;
 
+    WifiP2pManager.ConnectionInfoListener connectionInfoListener;
+
     public String TAG = "232323MainActivityController: ";
 
     private MainActivityController(){
+        connectionInfoListener = new WifiP2pManager.ConnectionInfoListener(){
+            @Override
+            public void onConnectionInfoAvailable(WifiP2pInfo p2PInfo){
+                final InetAddress groupOwnerAddress = p2PInfo.groupOwnerAddress;
+
+                if(p2PInfo.groupFormed && p2PInfo.isGroupOwner){
+                    mainActivity.p2pInfoText.setText("Host");
+                    ServerSocketManager serverSocketManager = new ServerSocketManager();
+                    serverSocketManager.execute();
+
+                }else if(p2PInfo.groupFormed){
+                    mainActivity.p2pInfoText.setText("Client");
+                    ClientSocketManager client = new ClientSocketManager(groupOwnerAddress);
+                    client.execute();
+                }else{
+                    mainActivity.p2pInfoText.setText("ummm");
+                }
+            }
+        };
 
         peers = new ArrayList<>();
     }
@@ -42,13 +64,13 @@ public class MainActivityController {
         return MainActivityController.mMainActivityController;
     }
 
-    public static void disconnect() {
-
-    }
-
     public void setMainActivity(MainActivity mainActivity){
         this.mainActivity = mainActivity;
         context = mainActivity.getApplicationContext();
+    }
+
+    public void disconnect(){
+        // TODO disconnect on app closing
     }
 
     public void turnOnWifi(){
@@ -133,26 +155,6 @@ public class MainActivityController {
         });
     }
 
-    WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener(){
-            @Override
-            public void onConnectionInfoAvailable(WifiP2pInfo p2PInfo){
-                final InetAddress groupOwnerAddress = p2PInfo.groupOwnerAddress;
-
-                if(p2PInfo.groupFormed && p2PInfo.isGroupOwner){
-                    mainActivity.p2pInfoText.setText("Host");
-                    ServerSocketManager serverSocketManager = new ServerSocketManager();
-                    serverSocketManager.execute();
-
-                }else if(p2PInfo.groupFormed){
-                    mainActivity.p2pInfoText.setText("Client");
-                    ClientSocketManager client = new ClientSocketManager(groupOwnerAddress);
-                    client.execute();
-                }else{
-                    mainActivity.p2pInfoText.setText("ummm");
-                }
-
-            }
-    };
 
     public String[] getPeerList(){
         Log.d(TAG, "getting peer list..");

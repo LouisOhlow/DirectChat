@@ -93,15 +93,14 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(receiver);
         Log.d(TAG, "startSearch - onPause");
 
-        // TODO disconnet on app closing
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        MainActivityController.disconnect();
-        //manager.requestConnectionInfo(channel, );
+        // TODO disconnect on app closing
     }
 
     private void setupIntents(){

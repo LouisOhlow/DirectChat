@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
+import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,7 +17,7 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
     MyAdapter mAdapter;
     WifiP2pManager manager;
     Channel channel;
-    WifiP2pManager.PeerListListener peerlistListener;
+    PeerListListener peerlistListener;
 
     MainActivity activity;
 
