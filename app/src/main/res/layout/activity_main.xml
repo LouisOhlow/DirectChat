@@ -19,13 +19,6 @@
             android:background="?attr/colorPrimary">
         </androidx.appcompat.widget.Toolbar>
 
-        <Button
-            android:id="@+id/refreshButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="0dp"
-            android:text="@string/refresh" />
-
         <TextView
             android:id="@+id/p2pInfo"
             android:layout_width="match_parent"

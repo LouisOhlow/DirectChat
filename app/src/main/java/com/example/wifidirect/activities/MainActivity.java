@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
@@ -23,7 +24,7 @@ import java.net.ServerSocket;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String TAG = "Mainactivity: ";
+    private String TAG = "232323Mainactivity: ";
 
     private final IntentFilter intentFilter = new IntentFilter();
 
@@ -41,12 +42,13 @@ public class MainActivity extends AppCompatActivity {
 
     public TextView p2pInfoText;
 
-    LoadingDialog loadingDialog;
+    public LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         // create the Singleton as the MVC Controller
         mMainActivityController = MainActivityController.getSC();
@@ -56,9 +58,11 @@ public class MainActivity extends AppCompatActivity {
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 
         channel = manager.initialize(this, getMainLooper(), null);
+        Log.d(TAG, "channel initialized");
+
         mMainActivityController.startSearch(channel, manager);
 
-        mMainActivityController.turnOnWifi();
+        mMainActivityController.turnOnWifi(); //TODO turn on location
         p2pInfoText = findViewById(R.id.p2pInfo);
 
         loadingDialog = new LoadingDialog();
@@ -88,6 +92,16 @@ public class MainActivity extends AppCompatActivity {
         //Disable receiver
         unregisterReceiver(receiver);
         Log.d(TAG, "startSearch - onPause");
+
+        // TODO disconnet on app closing
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        MainActivityController.disconnect();
+        //manager.requestConnectionInfo(channel, );
     }
 
     private void setupIntents(){
@@ -104,6 +118,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Indicates this device's details have changed.
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+
+        Log.d(TAG, "set up all Intent");
+
+
     }
 
     private void setupRecyclerView(){
@@ -118,32 +136,27 @@ public class MainActivity extends AppCompatActivity {
         mAdapter = new MyAdapter(mMainActivityController.getPeerList(), listItemOnClick);
         receiver = new BroadcastReceiver(manager, channel, this, mAdapter, mMainActivityController.peerListListener);
         recyclerView.setAdapter(mAdapter);
+
+        Log.d(TAG, "setup Recycler View");
+
     }
 
     private void initButtons() {
-        Button refreshButton = findViewById(R.id.refreshButton);
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                mAdapter.update(mMainActivityController.getPeerList());
-            }
-        });
-
         //The OnClick method for the listItems in the RecyclerView
         listItemOnClick = new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 int itemPosition = recyclerView.getChildLayoutPosition(v);
                 mMainActivityController.connectToPeer(itemPosition, manager, channel);
-                openLoadDialog();
+                loadingDialog.show(getSupportFragmentManager(), "load Dialog");
             }
         };
 
     }
 
-    public void openLoadDialog(){
-        loadingDialog.show(getSupportFragmentManager(), "load Dialog");
+    public void startChatView(){
+        Intent chatStartIntent = new Intent(this, ChatTestView.class);
+        this.startActivity(chatStartIntent);
     }
 }
 

@@ -28,7 +28,7 @@ public class MainActivityController {
 
     public ArrayList<WifiP2pDevice> peers;
 
-    public String TAG = "MainActivityController: ";
+    public String TAG = "232323MainActivityController: ";
 
     private MainActivityController(){
 
@@ -40,6 +40,10 @@ public class MainActivityController {
             MainActivityController.mMainActivityController = new MainActivityController();
         }
         return MainActivityController.mMainActivityController;
+    }
+
+    public static void disconnect() {
+
     }
 
     public void setMainActivity(MainActivity mainActivity){
@@ -86,6 +90,8 @@ public class MainActivityController {
                 // If an AdapterView is backed by this data, notify it
                 // of the change. For instance, if you have a ListView of
                 // available peers, trigger an update.
+                //TODO Check for mobile names
+                mainActivity.mAdapter.update(getPeerList());
                 //((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
 
                 // Perform any other updates needed based on the new list of
@@ -93,6 +99,8 @@ public class MainActivityController {
                 for(WifiP2pDevice peer : peers){
                     Log.d(TAG, peer.deviceName);
                 }
+                Log.d(TAG, "added peers");
+                Log.d(TAG, "" + refreshedPeers.size());
             }
             if (MainActivityController.this.peers.size() == 0) {
                 //Log.d(WiFiDirectActivity.TAG, "No devices found");
@@ -133,19 +141,21 @@ public class MainActivityController {
                 if(p2PInfo.groupFormed && p2PInfo.isGroupOwner){
                     mainActivity.p2pInfoText.setText("Host");
                     ServerSocketManager serverSocketManager = new ServerSocketManager();
-                    serverSocketManager.run();
+                    serverSocketManager.execute();
 
                 }else if(p2PInfo.groupFormed){
                     mainActivity.p2pInfoText.setText("Client");
                     ClientSocketManager client = new ClientSocketManager(groupOwnerAddress);
-                    client.run();
+                    client.execute();
+                }else{
+                    mainActivity.p2pInfoText.setText("ummm");
                 }
 
             }
     };
 
     public String[] getPeerList(){
-
+        Log.d(TAG, "getting peer list..");
         String[] peerNames = new String[peers.size()];
         for (int i = 0; i < peers.size(); i++) {
             peerNames[i] = peers.get(i).deviceName;
@@ -153,9 +163,10 @@ public class MainActivityController {
         return peerNames;
     }
 
-    public void connectServer() {
-
-
-
+    public void serverConnected(boolean serverConnected){
+        if(serverConnected) {
+            mainActivity.startChatView();
+        }
+        mainActivity.loadingDialog.dismiss();
     }
 }
