@@ -13,21 +13,22 @@ public class ServerSocketManager extends AsyncTask {
     private Socket socket;
     private ServerSocket serverSocket;
 
-    String TAG = "ServerSockerManager";
+    String TAG = "Wifidirect: ServerSockerManager";
 
 
     @Override
     protected String doInBackground(Object[] objects) {
         try{
             serverSocket = new ServerSocket(3434);
+            Log.d(TAG, "connecting to Server...");
             socket = serverSocket.accept();
+            Log.d(TAG, "successfully connected to Client...");
             MainActivityController.getSC().serverConnected(true);
-            Log.d(TAG, "successfully connected to Server...");
 
         }catch(IOException e){
             e.printStackTrace();
-            MainActivityController.getSC().serverConnected(false);
             Log.d(TAG, "could not connect to Server");
+            MainActivityController.getSC().serverConnected(false);
         }
         return null;
     }

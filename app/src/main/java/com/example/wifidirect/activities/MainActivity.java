@@ -24,7 +24,7 @@ import java.net.ServerSocket;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String TAG = "232323Mainactivity: ";
+    private String TAG = "Wifidirect: Mainactivity: ";
 
     private final IntentFilter intentFilter = new IntentFilter();
 
@@ -60,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
         channel = manager.initialize(this, getMainLooper(), null);
         Log.d(TAG, "channel initialized");
 
-        mMainActivityController.startSearch(channel, manager);
+        mMainActivityController.initialize(channel, manager);
+        mMainActivityController.startSearch();
 
         mMainActivityController.turnOnWifi(); //TODO turn on location
         p2pInfoText = findViewById(R.id.p2pInfo);
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
+        mMainActivityController.disconnect();
         //Disable receiver
         unregisterReceiver(receiver);
         Log.d(TAG, "startSearch - onPause");
@@ -100,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        mMainActivityController.disconnect();
         // TODO disconnect on app closing
     }
 
@@ -119,8 +122,6 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
         Log.d(TAG, "set up all Intent");
-
-
     }
 
     private void setupRecyclerView(){

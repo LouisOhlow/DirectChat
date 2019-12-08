@@ -13,7 +13,7 @@ import com.example.wifidirect.activities.MainActivity;
 
 public class BroadcastReceiver extends android.content.BroadcastReceiver {
     MainActivityController mMainActivityController;
-    String TAG = "232323BroadcastReceiver: ";
+    String TAG = "Wifidirect: BroadcastReceiver: ";
     MyAdapter mAdapter;
     WifiP2pManager manager;
     Channel channel;
