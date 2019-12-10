@@ -10,6 +10,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.wifidirect.activities.MainActivity;
+import com.example.wifidirect.controller.MainActivityController;
+import com.example.wifidirect.ui.MyAdapter;
 
 public class BroadcastReceiver extends android.content.BroadcastReceiver {
     MainActivityController mMainActivityController;

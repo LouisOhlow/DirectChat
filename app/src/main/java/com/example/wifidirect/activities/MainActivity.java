@@ -11,16 +11,13 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.wifidirect.BroadcastReceiver;
-import com.example.wifidirect.LoadingDialog;
-import com.example.wifidirect.MainActivityController;
-import com.example.wifidirect.MyAdapter;
+import com.example.wifidirect.ui.LoadingDialog;
+import com.example.wifidirect.controller.MainActivityController;
+import com.example.wifidirect.ui.MyAdapter;
 import com.example.wifidirect.R;
-
-import java.net.ServerSocket;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,10 +46,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         // create the Singleton as the MVC Controller
         mMainActivityController = MainActivityController.getSC();
-        mMainActivityController.setMainActivity(this);
 
         //the WifiP2PManager class
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
@@ -60,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         channel = manager.initialize(this, getMainLooper(), null);
         Log.d(TAG, "channel initialized");
 
-        mMainActivityController.initialize(channel, manager);
+        mMainActivityController.initialize(channel, manager, this);
         mMainActivityController.startSearch();
 
         mMainActivityController.turnOnWifi(); //TODO turn on location
@@ -90,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        mMainActivityController.disconnect();
+        //mMainActivityController.disconnect();
         //Disable receiver
         unregisterReceiver(receiver);
         Log.d(TAG, "startSearch - onPause");
@@ -155,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startChatView(){
-        Intent chatStartIntent = new Intent(this, ChatTestView.class);
+        Intent chatStartIntent = new Intent(this, ChatActivity.class);
         this.startActivity(chatStartIntent);
     }
 }
