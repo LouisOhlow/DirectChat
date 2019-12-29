@@ -12,9 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 
-import com.example.wifidirect.activities.ChatActivity;
 import com.example.wifidirect.serverclient.ClientSocketManager;
-import com.example.wifidirect.serverclient.SendReceive;
 import com.example.wifidirect.serverclient.ServerSocketManager;
 import com.example.wifidirect.activities.MainActivity;
 
@@ -39,9 +37,9 @@ public class MainActivityController {
     Socket socket;
 
     public WifiP2pManager.ConnectionInfoListener connectionInfoListener;
+    public String chatPartnerName;
 
     public String TAG = "Wifidirect: MainActivityController: ";
-    public SendReceive sendReceive;
 
     private MainActivityController(){
 
@@ -82,11 +80,8 @@ public class MainActivityController {
     }
 
     public void disconnect(){
-        // TODO disconnect on app closing
-
         if (manager != null && channel != null) {
-            manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
-
+            /*manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
                     Log.d(TAG, "removeGroup onSuccess -");
@@ -96,11 +91,23 @@ public class MainActivityController {
                 public void onFailure(int reason) {
                     Log.d(TAG, "removeGroup onFailure -");
                 }
+            });*/
+            manager.cancelConnect(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "cancelConnect onSuccess -");
+                }
+
+                @Override
+                public void onFailure(int reason) {
+                    Log.d(TAG, "cancelConnect onSuccess -");
+                }
             });
         }
     }
 
     public void turnOnWifi(){
+
         WifiManager mWifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (!mWifiManager.isWifiEnabled()) mWifiManager.setWifiEnabled(true);
         else {
@@ -113,16 +120,13 @@ public class MainActivityController {
             @Override
             public void onSuccess() {
                 // Code for when the discovery initiation is successful goes here.
-
                 Log.d(TAG, "startSearch - onSuccess");
             }
 
             @Override
             public void onFailure(int reason) {
                 // Code for when the discovery initiation fails goes here.
-
                 Log.d(TAG, "startSearch - onFailure");
-
             }
         });
     }
@@ -163,9 +167,10 @@ public class MainActivityController {
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = peer.deviceAddress;
         config.wps.setup = WpsInfo.PBC;
+        chatPartnerName = peer.deviceName;
+
 
         manager.connect(channel, config, new WifiP2pManager.ActionListener() {
-
             @Override
             public void onSuccess() {
                 // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
@@ -207,6 +212,11 @@ public class MainActivityController {
         if(serverConnected) {
             mainActivity.startChatView();
         }
-        //#TODO if(!mainActivity.loadingDialog.isHidden()){mainActivity.loadingDialog.dismiss();}
+        else{
+            disconnect();
+        }
+        if(!mainActivity.loadingDialog.isHidden()){
+            mainActivity.loadingDialog.dismiss();
+        }
     }
 }

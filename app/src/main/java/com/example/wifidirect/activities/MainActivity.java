@@ -1,6 +1,7 @@
 package com.example.wifidirect.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -63,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
 
         loadingDialog = new LoadingDialog();
         loadingDialog.setCancelable(false);
+
+        //TODO change this
+        loadingDialog.show(getSupportFragmentManager(), "load Dialog");
+        loadingDialog.dismiss();
 
         initButtons();
         setupRecyclerView();
@@ -128,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         //specifies an Adapter for the RecyclerView
-        mAdapter = new MyAdapter(mMainActivityController.getPeerList(), listItemOnClick);
+        mAdapter = new MyAdapter(mMainActivityController.getPeerList(), listItemOnClick, R.layout.listitem);
         receiver = new BroadcastReceiver(manager, channel, this, mAdapter, mMainActivityController.peerListListener);
         recyclerView.setAdapter(mAdapter);
 

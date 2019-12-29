@@ -14,6 +14,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private String[] mDataset;
     Context context;
     View.OnClickListener onClick;
+    int resource;
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
@@ -27,21 +28,24 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(String[] myDataset, final View.OnClickListener onClick) {
-
+    public MyAdapter(String[] myDataset, final View.OnClickListener onClick, int resource) {
         mDataset = myDataset;
-
         this.onClick = onClick;
-
+        this.resource = resource;
     }
 
+    // Provide a suitable constructor (depends on the kind of dataset)
+    public MyAdapter(String[] myDataset, int resource) {
+        mDataset = myDataset;
+        this.resource = resource;
+    }
     // Create new views (invoked by the layout manager)
     @Override
     public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                      int viewType) {
         // create a new view
         TextView v = (TextView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.listitem, parent, false);
+                .inflate(resource, parent, false);
         v.setOnClickListener(onClick);
         MyViewHolder vh = new MyViewHolder(v);
         return vh;
