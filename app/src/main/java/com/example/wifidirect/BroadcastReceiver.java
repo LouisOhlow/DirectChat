@@ -5,17 +5,21 @@ import android.content.Intent;
 import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
+import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.wifidirect.activities.MainActivity;
+import com.example.wifidirect.controller.MainActivityController;
+import com.example.wifidirect.ui.MyAdapter;
 
 public class BroadcastReceiver extends android.content.BroadcastReceiver {
     MainActivityController mMainActivityController;
-    String TAG = "BroadcastReceiver: ";
+    String TAG = "Wifidirect: BroadcastReceiver: ";
     MyAdapter mAdapter;
     WifiP2pManager manager;
     Channel channel;
-    WifiP2pManager.PeerListListener peerlistListener;
+    PeerListListener peerlistListener;
 
     MainActivity activity;
 
@@ -31,12 +35,14 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
+            Log.d(TAG, "WIFI_P2P_STATE_CHANGED_ACTION");
 
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
 
             }
         } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
+            Log.d(TAG, "WIFI_P2P_PEERS_CHANGED_ACTION");
 
             if (manager != null) {
                 manager.requestPeers(channel, peerlistListener);
@@ -44,6 +50,7 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
             Toast.makeText(context, "Wifi peer list has changed", Toast.LENGTH_SHORT).show();
 
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
+            Log.d(TAG, "WIFI_P2P_CONNECTION_CHANGED_ACTION");
 
             Toast.makeText(context, "Connection state has changed", Toast.LENGTH_SHORT).show();
             if(manager==null) {
@@ -53,15 +60,16 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
 
                 if(networkInfo.isConnected()){
                     manager.requestConnectionInfo(channel, mMainActivityController.connectionInfoListener);
+                    Toast.makeText(context, "device connected", Toast.LENGTH_LONG).show();
+
                 }else{
                             Toast.makeText(context, "device disconnected", Toast.LENGTH_LONG).show();
                 }
 
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
+            Log.d(TAG, "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION");
 
             Toast.makeText(context, "This device changed action", Toast.LENGTH_SHORT).show();
-
-
         }
     }
 }

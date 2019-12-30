@@ -1,4 +1,4 @@
-package com.example.wifidirect;
+package com.example.wifidirect.controller;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
@@ -9,12 +9,15 @@ import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.example.wifidirect.serverclient.ClientSocketManager;
+import com.example.wifidirect.serverclient.ServerSocketManager;
 import com.example.wifidirect.activities.MainActivity;
 
 import java.net.InetAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -22,16 +25,44 @@ public class MainActivityController {
 
     private static MainActivityController mMainActivityController;
 
+    WifiP2pManager.Channel channel;
+    WifiP2pManager manager;
+
     private Context context;
     private MainActivity mainActivity;
 
     public ArrayList<WifiP2pDevice> peers;
+    public ArrayList<WifiP2pDevice> tempPeers;
 
-    public String TAG = "MainActivityController: ";
+    Socket socket;
+
+    public WifiP2pManager.ConnectionInfoListener connectionInfoListener;
+    public String chatPartnerName;
+
+    public String TAG = "Wifidirect: MainActivityController: ";
 
     private MainActivityController(){
 
+        connectionInfoListener = new WifiP2pManager.ConnectionInfoListener(){
+            @Override
+            public void onConnectionInfoAvailable(WifiP2pInfo p2PInfo){
+                final InetAddress groupOwnerAddress = p2PInfo.groupOwnerAddress;
+
+                if(p2PInfo.groupFormed && p2PInfo.isGroupOwner){
+                    mainActivity.p2pInfoText.setText("Host");
+                    ServerSocketManager serverSocketManager = new ServerSocketManager();
+                    serverSocketManager.start();
+
+                }else if(p2PInfo.groupFormed){
+                    mainActivity.p2pInfoText.setText("Client");
+                    ClientSocketManager client = new ClientSocketManager(groupOwnerAddress);
+                    client.start();
+                }
+            }
+        };
+
         peers = new ArrayList<>();
+        tempPeers = new ArrayList<>();
     }
 
     public static MainActivityController getSC(){
@@ -41,12 +72,42 @@ public class MainActivityController {
         return MainActivityController.mMainActivityController;
     }
 
-    public void setMainActivity(MainActivity mainActivity){
+    public void initialize(WifiP2pManager.Channel channel, WifiP2pManager manager, MainActivity mainActivity) {
+        this.channel = channel;
+        this.manager = manager;
         this.mainActivity = mainActivity;
         context = mainActivity.getApplicationContext();
     }
 
+    public void disconnect(){
+        if (manager != null && channel != null) {
+            /*manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "removeGroup onSuccess -");
+                }
+
+                @Override
+                public void onFailure(int reason) {
+                    Log.d(TAG, "removeGroup onFailure -");
+                }
+            });*/
+            manager.cancelConnect(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "cancelConnect onSuccess -");
+                }
+
+                @Override
+                public void onFailure(int reason) {
+                    Log.d(TAG, "cancelConnect onSuccess -");
+                }
+            });
+        }
+    }
+
     public void turnOnWifi(){
+
         WifiManager mWifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (!mWifiManager.isWifiEnabled()) mWifiManager.setWifiEnabled(true);
         else {
@@ -54,21 +115,18 @@ public class MainActivityController {
         }
     }
 
-    public void startSearch(WifiP2pManager.Channel channel, WifiP2pManager manager){
+    public void startSearch(){
         manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
                 // Code for when the discovery initiation is successful goes here.
-
                 Log.d(TAG, "startSearch - onSuccess");
             }
 
             @Override
             public void onFailure(int reason) {
                 // Code for when the discovery initiation fails goes here.
-
                 Log.d(TAG, "startSearch - onFailure");
-
             }
         });
     }
@@ -78,20 +136,24 @@ public class MainActivityController {
         public void onPeersAvailable(WifiP2pDeviceList peerList) {
 
             Collection<WifiP2pDevice> refreshedPeers = peerList.getDeviceList();
-            if (!refreshedPeers.equals(MainActivityController.this.peers)) {
-                MainActivityController.this.peers.clear();
-                MainActivityController.this.peers.addAll(refreshedPeers);
-
+            if (!refreshedPeers.equals( MainActivityController.this.tempPeers)) {
+                MainActivityController.this.tempPeers.clear();
+                MainActivityController.this.tempPeers.addAll(refreshedPeers);
+                MainActivityController.this.peers = MainActivityController.this.tempPeers;
                 // If an AdapterView is backed by this data, notify it
                 // of the change. For instance, if you have a ListView of
                 // available peers, trigger an update.
+                //TODO Check for mobile names
+
+                mainActivity.mAdapter.update(getPeerList());
                 //((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
 
                 // Perform any other updates needed based on the new list of
                 // peers connected to the Wi-Fi P2P network.
-                for(WifiP2pDevice peer : peers){
-                    Log.d(TAG, peer.deviceName);
+                for(WifiP2pDevice peer : tempPeers){
+                    Log.d(TAG, "name: " + peer.deviceName);
                 }
+                Log.d(TAG, "added " + refreshedPeers.size() + " peers");
             }
             if (MainActivityController.this.peers.size() == 0) {
                 //Log.d(WiFiDirectActivity.TAG, "No devices found");
@@ -105,9 +167,10 @@ public class MainActivityController {
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = peer.deviceAddress;
         config.wps.setup = WpsInfo.PBC;
+        chatPartnerName = peer.deviceName;
+
 
         manager.connect(channel, config, new WifiP2pManager.ActionListener() {
-
             @Override
             public void onSuccess() {
                 // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
@@ -124,27 +187,36 @@ public class MainActivityController {
         });
     }
 
-    WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener(){
-            @Override
-            public void onConnectionInfoAvailable(WifiP2pInfo p2PInfo){
-                final InetAddress griupOwnerAddress = p2PInfo.groupOwnerAddress;
-
-                if(p2PInfo.groupFormed && p2PInfo.isGroupOwner){
-                    mainActivity.p2pInfoText.setText("Host");
-                }else if(p2PInfo.groupFormed){
-                    mainActivity.p2pInfoText.setText("Client");
-                }
-
+    private ArrayList<WifiP2pDevice> getOnlyPhones(ArrayList<WifiP2pDevice> peerList){
+        ArrayList<WifiP2pDevice> phoneList = new ArrayList<>();
+        for(WifiP2pDevice peer : peerList){
+            if(peer.primaryDeviceType.equals("Phone")){
+                phoneList.add(peer);
             }
-    };
+        }
+        return phoneList;
+    }
 
     public String[] getPeerList(){
-
+        Log.d(TAG, "getting peer list..");
         String[] peerNames = new String[peers.size()];
         for (int i = 0; i < peers.size(); i++) {
             peerNames[i] = peers.get(i).deviceName;
+            //Log.d(TAG, "type: " + peers.get(i).deviceName);
         }
         return peerNames;
     }
 
+    public void serverConnected(boolean serverConnected, Socket socket){
+        this.socket = socket;
+        if(serverConnected) {
+            mainActivity.startChatView();
+        }
+        else{
+            disconnect();
+        }
+        if(!mainActivity.loadingDialog.isHidden()){
+            mainActivity.loadingDialog.dismiss();
+        }
+    }
 }
