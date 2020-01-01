@@ -90,12 +90,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        //mMainActivityController.disconnect();
         //Disable receiver
         unregisterReceiver(receiver);
         Log.d(TAG, "startSearch - onPause");
-
-
     }
 
     @Override

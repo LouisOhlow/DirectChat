@@ -59,8 +59,10 @@ public class ChatActivity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mChatActivityController.sendMessage(messageText.getText().toString());
-                messageText.setText("");
+                if(messageText.getText().toString().trim().length() > 0) {
+                    mChatActivityController.sendMessage(messageText.getText().toString());
+                    messageText.setText("");
+                }
             }
         });
 
