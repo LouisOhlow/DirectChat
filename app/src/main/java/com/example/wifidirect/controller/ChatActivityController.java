@@ -1,6 +1,5 @@
 package com.example.wifidirect.controller;
 
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Handler;
 import android.util.Log;
 
@@ -20,14 +19,11 @@ public class ChatActivityController {
     private ArrayList<String> chat;
     private String chatPartner;
 
-    private String PARTNERMACADDRESS;
     private String MACKEY = "Ab6N^C=/QI^[p:<_L.4:_Hh+;~Om3|96]y'u:&(iXjaAerWf2`Nx:<7Qh7+oSu";
     private String TAG = "wifidirect: ChatActivityController";
 
-    public WifiP2pManager manager;
-
-    ChatActivity chatActivity;
-    MainActivityController mMainActivityController;
+    private ChatActivity chatActivity;
+    private MainActivityController mMainActivityController;
 
     private ChatActivityController(){
         mMainActivityController = MainActivityController.getSC();
@@ -48,7 +44,6 @@ public class ChatActivityController {
 
         sendReceive.setHandler(handler);
         sendReceive.start();
-        manager = mMainActivityController.manager;
         chatPartner = mMainActivityController.chatPartnerName;
         Log.d(TAG, "connection status: " + mMainActivityController.socket.isConnected());
 
@@ -61,14 +56,14 @@ public class ChatActivityController {
         Log.d(TAG, "connection status: " + mMainActivityController.socket.isConnected());
         Log.d(TAG, "setting message: " + tempMessage);
 
-        if(isMacAddress(tempMessage)){
+        if(tempMessage.contains(MACKEY)){
             loadMacTable(tempMessage);
         }
         else {
             Log.d(TAG, "adding message to chat");
             chat.add(chatPartner + ": " + tempMessage);
-            chatActivity.loadChat(tempMessage);
         }
+        chatActivity.loadChat(tempMessage);
     }
 
     private void loadMacTable(String tempMessage) {
@@ -76,7 +71,7 @@ public class ChatActivityController {
         String[] partnerInfos = tempMessage.split("----");
 
         chatPartner = partnerInfos[2];
-        PARTNERMACADDRESS = partnerInfos[1];
+        String PARTNERMACADDRESS = partnerInfos[1];
 
         Log.d(TAG, "loading chat history by MAC address: " + PARTNERMACADDRESS);
         //TODO todo4Emily: load message table
@@ -84,15 +79,11 @@ public class ChatActivityController {
         // und die dritte für den timestamp (Auch wenn wir den evt nicht brauchen werden)
     }
 
-    private boolean isMacAddress(String message){
-        return message.contains(MACKEY);
-    }
-
     public void sendMessage(final String message) {
         Log.d(TAG, "starting Thread to send message..");
         Log.d(TAG, "connection status: " + mMainActivityController.socket.isConnected());
 
-        if(isMacAddress(message)){
+        if(message.contains(MACKEY)){
             Log.d(TAG, "sending MAC address..");
         }
         else {
@@ -109,6 +100,7 @@ public class ChatActivityController {
         }).start();
     }
 
+    // TODO Arthur testing
     private String getMacAddr() {
         Log.d(TAG, "getting MAC address..");
         try {
@@ -134,14 +126,13 @@ public class ChatActivityController {
                 }
                 return res1.toString();
             }
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
         }
         return "";
     }
 
     public String[] getChatList() {
         Log.d(TAG, "getting chat list..");
-        String[] chatHistory = chat.toArray(new String[chat.size()]);
-        return chatHistory;
+        return chat.toArray(new String[0]);
     }
 }

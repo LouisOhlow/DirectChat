@@ -1,7 +1,6 @@
 package com.example.wifidirect.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,7 +52,10 @@ public class MainActivity extends AppCompatActivity {
         //the WifiP2PManager class
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 
-        channel = manager.initialize(this, getMainLooper(), null);
+        if(manager != null) {
+            channel = manager.initialize(this, getMainLooper(), null);
+        }
+
         Log.d(TAG, "channel initialized");
 
         mMainActivityController.initialize(channel, manager, this);
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         initButtons();
         setupRecyclerView();
         setupIntents();
+        mMainActivityController.disconnect();
     }
 
     @Override
@@ -90,12 +93,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        //mMainActivityController.disconnect();
         //Disable receiver
         unregisterReceiver(receiver);
-        Log.d(TAG, "startSearch - onPause");
-
-
+        Log.d(TAG, "Mainactivity - onPause");
     }
 
     @Override
@@ -103,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
 
         mMainActivityController.disconnect();
+        Log.d(TAG, "Mainactivity - onDestroy");
+
         // TODO disconnect on app closing
     }
 
@@ -155,6 +157,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startChatView(){
+        Log.d(TAG, "start Intent to ChatActivity");
+
         Intent chatStartIntent = new Intent(this, ChatActivity.class);
         this.startActivity(chatStartIntent);
     }
