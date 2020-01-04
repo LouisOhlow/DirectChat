@@ -1,5 +1,6 @@
 package com.example.wifidirect.controller;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WpsInfo;
@@ -23,23 +24,24 @@ import java.util.Collection;
 
 public class MainActivityController {
 
+    @SuppressLint("StaticFieldLeak")
     private static MainActivityController mMainActivityController;
 
-    WifiP2pManager.Channel channel;
-    WifiP2pManager manager;
+    private WifiP2pManager.Channel channel;
+    private WifiP2pManager manager;
 
     private Context context;
     private MainActivity mainActivity;
 
-    public ArrayList<WifiP2pDevice> peers;
-    public ArrayList<WifiP2pDevice> tempPeers;
+    private ArrayList<WifiP2pDevice> peers;
+    private ArrayList<WifiP2pDevice> tempPeers;
 
     Socket socket;
 
     public WifiP2pManager.ConnectionInfoListener connectionInfoListener;
-    public String chatPartnerName;
+    String chatPartnerName;
 
-    public String TAG = "Wifidirect: MainActivityController: ";
+    private String TAG = "Wifidirect: MainActivityController: ";
 
     private MainActivityController(){
 
@@ -81,17 +83,18 @@ public class MainActivityController {
 
     public void disconnect(){
         if (manager != null && channel != null) {
-            /*manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+            manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
                     Log.d(TAG, "removeGroup onSuccess -");
+                    startSearch();
                 }
 
                 @Override
                 public void onFailure(int reason) {
                     Log.d(TAG, "removeGroup onFailure -");
                 }
-            });*/
+            });/*
             manager.cancelConnect(channel, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
@@ -102,12 +105,11 @@ public class MainActivityController {
                 public void onFailure(int reason) {
                     Log.d(TAG, "cancelConnect onSuccess -");
                 }
-            });
+            });*/
         }
     }
 
     public void turnOnWifi(){
-
         WifiManager mWifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (!mWifiManager.isWifiEnabled()) mWifiManager.setWifiEnabled(true);
         else {
@@ -143,7 +145,7 @@ public class MainActivityController {
                 // If an AdapterView is backed by this data, notify it
                 // of the change. For instance, if you have a ListView of
                 // available peers, trigger an update.
-                //TODO Check for mobile names
+                //TODO Check for mobile names deviceName.contains("Phone:");
 
                 mainActivity.mAdapter.update(getPeerList());
                 //((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
@@ -185,16 +187,6 @@ public class MainActivityController {
                         Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private ArrayList<WifiP2pDevice> getOnlyPhones(ArrayList<WifiP2pDevice> peerList){
-        ArrayList<WifiP2pDevice> phoneList = new ArrayList<>();
-        for(WifiP2pDevice peer : peerList){
-            if(peer.primaryDeviceType.equals("Phone")){
-                phoneList.add(peer);
-            }
-        }
-        return phoneList;
     }
 
     public String[] getPeerList(){

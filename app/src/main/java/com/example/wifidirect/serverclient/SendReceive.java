@@ -1,6 +1,5 @@
 package com.example.wifidirect.serverclient;
 
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 
