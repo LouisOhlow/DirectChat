@@ -22,6 +22,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
 
+
 public class MainActivityController {
 
     @SuppressLint("StaticFieldLeak")

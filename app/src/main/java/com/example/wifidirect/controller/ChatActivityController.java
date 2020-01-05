@@ -78,8 +78,9 @@ public class ChatActivityController {
         else {
             Log.d(TAG, "adding message to chat");
             chat.add(deviceNamePartner.split("Phone]")[1] + ": " + tempMessage);
+            chatActivity.loadChat();
+            saveMessage(tempMessage, false);
         }
-        chatActivity.loadChat(tempMessage);
     }
 
     public void sendMessage(final String message) {
@@ -91,7 +92,11 @@ public class ChatActivityController {
         }
         else {
             chat.add("Me: " + message);
-            chatActivity.loadChat(message);
+
+            //Loads the UI elements
+            chatActivity.loadChat();
+
+            saveMessage(message, true);
         }
 
         new Thread(new Runnable() {
@@ -148,8 +153,9 @@ public class ChatActivityController {
 
                     for(int i = 0; i<messages.size(); i++){
                         chat.add(messages.get(i).getText());
+                        Log.d(TAG, "added message to UI: " + messages.get(i).getText());
                     }
-                    chatActivity.loadChat("works");
+                    chatActivity.loadChat();
                 } else {
                     Macaddress newMac = new Macaddress();
                     newMac.setPartnermacaddress(PARTNERMACADDRESS);

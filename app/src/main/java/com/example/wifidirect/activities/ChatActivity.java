@@ -85,7 +85,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     });
 
-    public void loadChat(String message) {
+    public void loadChat() {
         if(true){
             mAdapter.update(mChatActivityController.getChatList());
             if((mChatActivityController.getChatList().length-1) > 0){
