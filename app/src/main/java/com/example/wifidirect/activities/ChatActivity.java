@@ -17,6 +17,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.wifidirect.R;
+import com.example.wifidirect.ui.LoadingDBDialog;
+import com.example.wifidirect.ui.LoadingDialog;
 import com.example.wifidirect.ui.MyAdapter;
 
 public class ChatActivity extends AppCompatActivity {
@@ -33,6 +35,8 @@ public class ChatActivity extends AppCompatActivity {
 
     ChatActivityController mChatActivityController;
 
+    public LoadingDBDialog loadingDBDialog = new LoadingDBDialog();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +44,8 @@ public class ChatActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //#TODO open dialog window
+        loadingDBDialog.setCancelable(false);
+        loadingDBDialog.show(getSupportFragmentManager(), "load Dialog");
 
         mChatActivityController = ChatActivityController.getSC();
         mChatActivityController.init(this, handler);
@@ -60,7 +65,15 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        initDBLoading();
         //#TODO load db with MAC Address and close dialog window after loading
+    }
+
+    private void initDBLoading() {
+        while(mChatActivityController.isLoadingDB){
+        }
+        loadChat();
+        loadingDBDialog.dismiss();
     }
 
     @Override

@@ -38,6 +38,8 @@ public class ChatActivityController {
     MessageDao messageDao;
     MacaddressDao macaddressDao;
 
+    public boolean isLoadingDB = false;
+
     private ChatActivityController(){
         mMainActivityController = MainActivityController.getSC();
     }
@@ -155,7 +157,7 @@ public class ChatActivityController {
                         chat.add(messages.get(i).getText());
                         Log.d(TAG, "added message to UI: " + messages.get(i).getText());
                     }
-                    chatActivity.loadChat();
+                    mChatActivityController.isLoadingDB = false;
                 } else {
                     Macaddress newMac = new Macaddress();
                     newMac.setPartnermacaddress(PARTNERMACADDRESS);
