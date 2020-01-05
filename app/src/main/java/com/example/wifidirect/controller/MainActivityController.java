@@ -9,6 +9,7 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -156,22 +157,23 @@ public class MainActivityController {
         config.deviceAddress = peer.deviceAddress;
         config.wps.setup = WpsInfo.PBC;
 
-        manager.connect(channel, config, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
-                Log.d(TAG, "connected succesfully");
-                Toast.makeText(context, "connected succesfully",
-                        Toast.LENGTH_SHORT).show();
-            }
+            manager.connect(channel, config, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
+                    Log.d(TAG, "connected succesfully");
+                    Toast.makeText(context, "connected succesfully",
+                            Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onFailure(int reason) {
-                Toast.makeText(context, "Connect failed. Retry.",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+                @Override
+                public void onFailure(int reason) {
+                    Toast.makeText(context, "Connect failed. Retry.",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
 
     // #TODO Arthur4testing
     public String[] getPeerNames(){

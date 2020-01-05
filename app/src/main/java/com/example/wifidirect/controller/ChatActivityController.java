@@ -121,7 +121,6 @@ public class ChatActivityController {
                 messageDao.createMessage(newMessage);
             }
         }).start();
-
     }
 
     public String[] getChatList() {
@@ -138,7 +137,7 @@ public class ChatActivityController {
         Log.d(TAG, "received MAC address");
         String[] partnerInfos = tempMessage.split("-----");
 
-        final String PARTNERMACADDRESS = partnerInfos[1];
+        PARTNERMACADDRESS = partnerInfos[1];
         deviceNamePartner = partnerInfos[2];
 
         Log.d(TAG, "loading chat history by MAC address: " + PARTNERMACADDRESS);
