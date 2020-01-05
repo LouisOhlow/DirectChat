@@ -3,6 +3,7 @@ package com.example.wifidirect;
 import android.content.Context;
 import android.content.Intent;
 import android.net.NetworkInfo;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
@@ -68,7 +69,8 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
 
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             Log.d(TAG, "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION");
-
+            WifiP2pDevice myDevice =(WifiP2pDevice)intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+            mMainActivityController.deviceName = myDevice.deviceName;
             Toast.makeText(context, "This device changed action", Toast.LENGTH_SHORT).show();
         }
     }

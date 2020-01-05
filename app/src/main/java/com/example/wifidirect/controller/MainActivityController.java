@@ -34,12 +34,11 @@ public class MainActivityController {
     private MainActivity mainActivity;
 
     private ArrayList<WifiP2pDevice> peers;
-    private ArrayList<WifiP2pDevice> tempPeers;
 
     Socket socket;
 
     public WifiP2pManager.ConnectionInfoListener connectionInfoListener;
-    String chatPartnerName;
+    public String deviceName;
 
     private String TAG = "Wifidirect: MainActivityController: ";
 
@@ -51,12 +50,10 @@ public class MainActivityController {
                 final InetAddress groupOwnerAddress = p2PInfo.groupOwnerAddress;
 
                 if(p2PInfo.groupFormed && p2PInfo.isGroupOwner){
-                    mainActivity.p2pInfoText.setText("Host");
                     ServerSocketManager serverSocketManager = new ServerSocketManager();
                     serverSocketManager.start();
 
                 }else if(p2PInfo.groupFormed){
-                    mainActivity.p2pInfoText.setText("Client");
                     ClientSocketManager client = new ClientSocketManager(groupOwnerAddress);
                     client.start();
                 }
@@ -64,7 +61,6 @@ public class MainActivityController {
         };
 
         peers = new ArrayList<>();
-        tempPeers = new ArrayList<>();
     }
 
     public static MainActivityController getSC(){
@@ -138,28 +134,17 @@ public class MainActivityController {
         public void onPeersAvailable(WifiP2pDeviceList peerList) {
 
             Collection<WifiP2pDevice> refreshedPeers = peerList.getDeviceList();
-            if (!refreshedPeers.equals( MainActivityController.this.tempPeers)) {
-                MainActivityController.this.tempPeers.clear();
-                MainActivityController.this.tempPeers.addAll(refreshedPeers);
-                MainActivityController.this.peers = MainActivityController.this.tempPeers;
-                // If an AdapterView is backed by this data, notify it
-                // of the change. For instance, if you have a ListView of
-                // available peers, trigger an update.
-                //TODO Check for mobile names deviceName.contains("Phone:");
+            if (!refreshedPeers.equals(peers)) {
+                peers.clear();
+                peers.addAll(refreshedPeers);
 
-                mainActivity.mAdapter.update(getPeerList());
-                //((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
+                //updates the Recyclerview
+                mainActivity.mAdapter.update(getPeerNames());
 
-                // Perform any other updates needed based on the new list of
-                // peers connected to the Wi-Fi P2P network.
-                for(WifiP2pDevice peer : tempPeers){
-                    Log.d(TAG, "name: " + peer.deviceName);
-                }
                 Log.d(TAG, "added " + refreshedPeers.size() + " peers");
             }
             if (MainActivityController.this.peers.size() == 0) {
-                //Log.d(WiFiDirectActivity.TAG, "No devices found");
-                Toast.makeText(context, "no devices found", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "No devices found");
             }
         }
     };
@@ -169,8 +154,6 @@ public class MainActivityController {
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = peer.deviceAddress;
         config.wps.setup = WpsInfo.PBC;
-        chatPartnerName = peer.deviceName;
-
 
         manager.connect(channel, config, new WifiP2pManager.ActionListener() {
             @Override
@@ -189,12 +172,17 @@ public class MainActivityController {
         });
     }
 
-    public String[] getPeerList(){
+    // #TODO Arthur4testing
+    public String[] getPeerNames(){
         Log.d(TAG, "getting peer list..");
         String[] peerNames = new String[peers.size()];
+
         for (int i = 0; i < peers.size(); i++) {
-            peerNames[i] = peers.get(i).deviceName;
-            //Log.d(TAG, "type: " + peers.get(i).deviceName);
+            String tempName = peers.get(i).deviceName;
+
+            if(tempName.contains("[Phone]")) {
+                peerNames[i] = tempName.split("Phone]")[1];
+            }
         }
         return peerNames;
     }

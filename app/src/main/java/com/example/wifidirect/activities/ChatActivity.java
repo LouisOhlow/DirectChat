@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import com.example.wifidirect.BroadcastReceiver;
 import com.example.wifidirect.controller.ChatActivityController;
-import com.example.wifidirect.serverclient.SendReceive;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -20,12 +19,8 @@ import android.widget.TextView;
 import com.example.wifidirect.R;
 import com.example.wifidirect.ui.MyAdapter;
 
-import java.util.ArrayList;
-
 public class ChatActivity extends AppCompatActivity {
 
-
-    public TextView tempText;
     TextView messageText;
     TextView sendButton;
 
@@ -52,7 +47,6 @@ public class ChatActivity extends AppCompatActivity {
 
         setupRecyclerView();
 
-        tempText = findViewById(R.id.textView2);
         messageText = findViewById(R.id.message);
         sendButton = findViewById(R.id.sendButton);
 
@@ -72,7 +66,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        mChatActivityController.sendMacAddress();
     }
 
     @Override
@@ -93,7 +87,6 @@ public class ChatActivity extends AppCompatActivity {
 
     public void loadChat(String message) {
         if(true){
-            tempText.setText(message);
             mAdapter.update(mChatActivityController.getChatList());
             if((mChatActivityController.getChatList().length-1) > 0){
                 recyclerView.smoothScrollToPosition(mChatActivityController.getChatList().length-1);

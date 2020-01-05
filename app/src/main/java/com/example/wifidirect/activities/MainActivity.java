@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         mMainActivityController.startSearch();
 
         mMainActivityController.turnOnWifi(); //TODO turn on location
-        p2pInfoText = findViewById(R.id.p2pInfo);
 
         loadingDialog = new LoadingDialog();
         loadingDialog.setCancelable(false);
@@ -135,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         //specifies an Adapter for the RecyclerView
-        mAdapter = new MyAdapter(mMainActivityController.getPeerList(), listItemOnClick, R.layout.listitem);
+        mAdapter = new MyAdapter(mMainActivityController.getPeerNames(), listItemOnClick, R.layout.listitem);
         receiver = new BroadcastReceiver(manager, channel, this, mAdapter, mMainActivityController.peerListListener);
         recyclerView.setAdapter(mAdapter);
 

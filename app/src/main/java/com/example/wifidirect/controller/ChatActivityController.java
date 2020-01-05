@@ -17,7 +17,8 @@ public class ChatActivityController {
     private static ChatActivityController mChatActivityController;
     private SendReceive sendReceive;
     private ArrayList<String> chat;
-    private String chatPartner;
+    private String deviceName;
+    private String deviceNamePartner;
 
     private String MACKEY = "Ab6N^C=/QI^[p:<_L.4:_Hh+;~Om3|96]y'u:&(iXjaAerWf2`Nx:<7Qh7+oSu";
     private String TAG = "wifidirect: ChatActivityController";
@@ -44,39 +45,25 @@ public class ChatActivityController {
 
         sendReceive.setHandler(handler);
         sendReceive.start();
-        chatPartner = mMainActivityController.chatPartnerName;
+        deviceName = mMainActivityController.deviceName;
+
         Log.d(TAG, "connection status: " + mMainActivityController.socket.isConnected());
 
-        //#TODO send message with MAC Address
-        sendMessage(MACKEY + "----" + getMacAddr() + "----" + mMainActivityController.chatPartnerName);
+        sendMacAddress();
     }
-
 
     public void receiveMessage(String tempMessage) {
         Log.d(TAG, "connection status: " + mMainActivityController.socket.isConnected());
         Log.d(TAG, "setting message: " + tempMessage);
 
         if(tempMessage.contains(MACKEY)){
-            loadMacTable(tempMessage);
+            loadChathistory(tempMessage);
         }
         else {
             Log.d(TAG, "adding message to chat");
-            chat.add(chatPartner + ": " + tempMessage);
+            chat.add(deviceNamePartner.split("Phone]")[1] + ": " + tempMessage);
         }
         chatActivity.loadChat(tempMessage);
-    }
-
-    private void loadMacTable(String tempMessage) {
-        Log.d(TAG, "received MAC address");
-        String[] partnerInfos = tempMessage.split("----");
-
-        chatPartner = partnerInfos[2];
-        String PARTNERMACADDRESS = partnerInfos[1];
-
-        Log.d(TAG, "loading chat history by MAC address: " + PARTNERMACADDRESS);
-        //TODO todo4Emily: load message table
-        // Am besten 3 Arraylists, eine für die Nachrichten, eine für den boolean wer es geschickt hat
-        // und die dritte für den timestamp (Auch wenn wir den evt nicht brauchen werden)
     }
 
     public void sendMessage(final String message) {
@@ -98,6 +85,29 @@ public class ChatActivityController {
                 sendReceive.write(message.getBytes());
             }
         }).start();
+    }
+
+    public String[] getChatList() {
+        Log.d(TAG, "getting chat list..");
+        return chat.toArray(new String[0]);
+    }
+
+    public void sendMacAddress(){
+        final String messagePacket = MACKEY + "-----" + getMacAddr() + "-----" + deviceName;
+        sendMessage(messagePacket);
+    }
+
+    private void loadChathistory(String tempMessage) {
+        Log.d(TAG, "received MAC address");
+        String[] partnerInfos = tempMessage.split("-----");
+
+        String PARTNERMACADDRESS = partnerInfos[1];
+        deviceNamePartner = partnerInfos[2];
+
+        Log.d(TAG, "loading chat history by MAC address: " + PARTNERMACADDRESS);
+        //TODO todo4Emily: load message table
+        // Am besten 3 Arraylists, eine für die Nachrichten, eine für den boolean wer es geschickt hat
+        // und die dritte für den timestamp (Auch wenn wir den evt nicht brauchen werden)
     }
 
     // TODO Arthur testing
@@ -129,10 +139,5 @@ public class ChatActivityController {
         } catch (Exception ignored) {
         }
         return "";
-    }
-
-    public String[] getChatList() {
-        Log.d(TAG, "getting chat list..");
-        return chat.toArray(new String[0]);
     }
 }
