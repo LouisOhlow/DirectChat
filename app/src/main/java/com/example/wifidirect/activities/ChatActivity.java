@@ -2,7 +2,6 @@ package com.example.wifidirect.activities;
 
 import android.os.Bundle;
 
-import com.example.wifidirect.BroadcastReceiver;
 import com.example.wifidirect.controller.ChatActivityController;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,7 +49,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_test_view);
+        setContentView(R.layout.activity_chat);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

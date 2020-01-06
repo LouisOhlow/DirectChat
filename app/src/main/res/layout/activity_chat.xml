@@ -18,15 +18,14 @@
             android:layout_weight=".7"
             android:background="?attr/colorPrimary">
 
-        </androidx.appcompat.widget.Toolbar>
 
-        <Button
-            android:id="@+id/backbutton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight=".30"
-            android:layout_margin="0dp"
-            android:text="Back" />
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".1"
+                app:srcCompat="@drawable/arrowback" />
+        </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 

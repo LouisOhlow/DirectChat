@@ -27,7 +27,7 @@
                 android:text="Chats"
                 android:gravity="center"
                 android:textSize="20dp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="#ffffff"
                 android:fontFamily="@font/roboto_bold"
                 >
 
@@ -41,8 +41,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:backgroundTint="@drawable/logo_trans"
-        android
+        android:background="@color/colorDark"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
