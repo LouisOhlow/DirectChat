@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.wifidirect.R;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private String[] mDataset;
@@ -70,8 +69,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         }
     }
 
-    public void update(String[] data) {
-        mDataset = data;
+    public void update(String[] chat) {
+        mDataset = chat;
         notifyDataSetChanged();
     }
 }

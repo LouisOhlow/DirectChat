@@ -32,16 +32,17 @@ public class ClientSocketManager extends Thread {
         super.run();
 
         mMainActivityController = MainActivityController.getSC();
-
-        while(isConnecting) {
+        int i = 0;
+        while(i<10){
             try {
                 socket.connect(new InetSocketAddress(hostAdd, 3434), 500);
                 Log.d(TAG, "connecting to Server...");
                 mMainActivityController.serverConnected(true, socket);
-                isConnecting = false;
+                i=10;
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.d(TAG, "could not connect to Server");
+                i++;
             }
         }
     }

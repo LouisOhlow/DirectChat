@@ -2,6 +2,7 @@ package com.example.wifidirect.controller;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 
@@ -22,13 +23,12 @@ import java.util.List;
 public class ChatActivityController {
     private static ChatActivityController mChatActivityController;
     private SendReceive sendReceive;
-    private ArrayList<String> chat;
     private String deviceName;
     private String deviceNamePartner;
 
     private String PARTNERMACADDRESS;
-    private String MACKEY = "Ab6N^C=/QI^[p:<_L.4:_Hh+;~Om3|96]y'u:&(iXjaAerWf2`Nx:<7Qh7+oSu";
-    private String TAG = "wifidirect: ChatActivityController";
+    final private String MACKEY = "Ab6N^C=/QI^[p:<_L.4:_Hh+;~Om3|96]y'u:&(iXjaAerWf2`Nx:<7Qh7+oSu";
+    private String TAG = "Wifidirect: ChatActivityController";
 
     private ChatActivity chatActivity;
     private MainActivityController mMainActivityController;
@@ -38,7 +38,11 @@ public class ChatActivityController {
     MessageDao messageDao;
     MacaddressDao macaddressDao;
 
-    public boolean isLoadingDB = false;
+    public List<Message> messages;
+
+    public boolean isLoadingDB = true;
+
+    Handler dbHandler;
 
     private ChatActivityController(){
         mMainActivityController = MainActivityController.getSC();
@@ -51,15 +55,16 @@ public class ChatActivityController {
         return ChatActivityController.mChatActivityController;
     }
 
-    public void init(ChatActivity chatActivity, Handler handler){
+    public void init(final ChatActivity chatActivity, Handler handler){
+        Log.d(TAG, "init Chatactivity controller");
+
         this.sendReceive = new SendReceive(mMainActivityController.socket);
         this.chatActivity = chatActivity;
         this.context = chatActivity.getApplicationContext();
+
         db = ChatDatabase.getInstance(context.getApplicationContext());
         messageDao = db.messageDao();
         macaddressDao = db.macaddressDao();
-
-        chat = new ArrayList<>();
 
         sendReceive.setHandler(handler);
         sendReceive.start();
@@ -67,7 +72,12 @@ public class ChatActivityController {
 
         Log.d(TAG, "connection status: " + mMainActivityController.socket.isConnected());
 
-        sendMacAddress();
+        dbHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(android.os.Message message) {
+               chatActivity.loadChat();
+            }
+        };
     }
 
     public void receiveMessage(String tempMessage) {
@@ -79,7 +89,7 @@ public class ChatActivityController {
         }
         else {
             Log.d(TAG, "adding message to chat");
-            chat.add(deviceNamePartner.split("Phone]")[1] + ": " + tempMessage);
+            loadChathistory("load-----" + PARTNERMACADDRESS + "-----load");
             chatActivity.loadChat();
             saveMessage(tempMessage, false);
         }
@@ -89,18 +99,6 @@ public class ChatActivityController {
         Log.d(TAG, "starting Thread to send message..");
         Log.d(TAG, "connection status: " + mMainActivityController.socket.isConnected());
 
-        if(message.contains(MACKEY)){
-            Log.d(TAG, "sending MAC address..");
-        }
-        else {
-            chat.add("Me: " + message);
-
-            //Loads the UI elements
-            chatActivity.loadChat();
-
-            saveMessage(message, true);
-        }
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -108,6 +106,15 @@ public class ChatActivityController {
                 sendReceive.write(message.getBytes());
             }
         }).start();
+
+        if(message.contains(MACKEY)){
+            Log.d(TAG, "sending MAC address..");
+        }
+        else {
+            saveMessage(message, true);
+            loadChathistory("load-----" + PARTNERMACADDRESS + "-----load");
+            chatActivity.loadChat();
+        }
     }
 
     private void saveMessage(final String message, final Boolean role) {
@@ -123,12 +130,8 @@ public class ChatActivityController {
         }).start();
     }
 
-    public String[] getChatList() {
-        Log.d(TAG, "getting chat list..");
-        return chat.toArray(new String[0]);
-    }
-
     public void sendMacAddress(){
+        Log.d(TAG, "sending the MAC address for loading the db");
         final String messagePacket = MACKEY + "-----" + getMacAddr() + "-----" + deviceName;
         sendMessage(messagePacket);
     }
@@ -141,7 +144,6 @@ public class ChatActivityController {
         deviceNamePartner = partnerInfos[2];
 
         Log.d(TAG, "loading chat history by MAC address: " + PARTNERMACADDRESS);
-        //TODO todo4Emily: load message table
 
         new Thread(new Runnable() {
             @Override
@@ -150,21 +152,23 @@ public class ChatActivityController {
                 if (conversationId != null) {
                     Log.d(TAG, "Found existing Mac Address with id" + conversationId);
                     List<Message> messages = messageDao.loadChatHistory(conversationId);
+                    mChatActivityController.messages = messages;
+                    Log.d(TAG, "transferred chatmessages: " + mChatActivityController.messages.size());
                     Log.d(TAG, "Loaded chat history");
-
-                    for(int i = 0; i<messages.size(); i++){
-                        chat.add(messages.get(i).getText());
+                    Log.d(TAG, "size: " + messages.size());
+                    for(int i = 0; i < messages.size(); i++){
                         Log.d(TAG, "added message to UI: " + messages.get(i).getText());
                     }
-                    mChatActivityController.isLoadingDB = false;
                 } else {
                     Macaddress newMac = new Macaddress();
                     newMac.setPartnermacaddress(PARTNERMACADDRESS);
                     macaddressDao.createMacaddress(newMac);
                     Log.d(TAG, "Inserted new Mac address:" + PARTNERMACADDRESS);
                 }
+                mChatActivityController.isLoadingDB = false;
             }
         }).start();
+
     }
 
     // TODO Arthur testing

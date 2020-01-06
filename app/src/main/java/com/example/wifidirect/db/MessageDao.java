@@ -16,5 +16,4 @@ public interface MessageDao {
 
     @Query("SELECT * FROM message WHERE conversation_id = :conversationId ORDER BY timestamp")
     List<Message> loadChatHistory(int conversationId);
-
 }
