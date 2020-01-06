@@ -30,13 +30,11 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 @RunWith(AndroidJUnit4.class)
-public class ExampleInstrumentedTest {
+public class WifiDirectTest {
 
     private ChatDatabase db;
     private MessageDao messageDao;
     private MacaddressDao macaddressDao;
-
-    private String TAG = "WifidirectTest: ";
 
     @Before
     public void createDb() {
@@ -53,14 +51,22 @@ public class ExampleInstrumentedTest {
     }
 
     @Test
-    public void addMacaddressAndRetrieveConversationId() throws Exception {
-        Macaddress macaddress = new Macaddress();
-        macaddress.setPartnermacaddress("12345");
-        macaddressDao.createMacaddress(macaddress);
-        Integer id = macaddress.getId();
+    public void addMacaddressAndRetrieveConversationId() {
+        Macaddress macaddress1 = new Macaddress();
+        macaddress1.setPartnermacaddress("12345");
+        macaddressDao.createMacaddress(macaddress1);
+        Integer id1 = 1;
+        Integer conversationId1 = macaddressDao.getIdIfExists("12345");
 
-        Integer conversationId = macaddressDao.getIdIfExists("12345");
-        assertEquals(id,  conversationId);
+        Macaddress macaddress2 = new Macaddress();
+        macaddress2.setPartnermacaddress("2");
+        macaddressDao.createMacaddress(macaddress2);
+        Integer id2 = 2;
+        Integer conversationId2 = macaddressDao.getIdIfExists("2");
+
+
+        assertEquals(id1,  conversationId1);
+        assertEquals(id2,  conversationId2);
     }
 
     @Test
