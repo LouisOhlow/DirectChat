@@ -15,8 +15,20 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary">
+            android:layout_height="match_parent"
+            android:background="?attr/colorPrimary"
+            android:gravity="center_horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Chats"
+                android:gravity="center_horizontal"
+                android:textSize="20dp"
+                >
+
+            </androidx.appcompat.widget.AppCompatTextView>
+
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>

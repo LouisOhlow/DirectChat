@@ -25,6 +25,7 @@ public class ChatActivity extends AppCompatActivity {
 
     TextView messageText;
     TextView sendButton;
+    TextView backButton;
 
     public ChatRecycleAdapter mAdapter;
     private RecyclerView recyclerView;
@@ -63,6 +64,7 @@ public class ChatActivity extends AppCompatActivity {
 
         messageText = findViewById(R.id.message);
         sendButton = findViewById(R.id.sendButton);
+        backButton = findViewById(R.id.backbutton);
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +75,13 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeActivity();
+            }
+        });
+
         //#TODO load db with MAC Address and close dialog window after loading
     }
 

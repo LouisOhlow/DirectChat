@@ -11,6 +11,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.wifidirect.BroadcastReceiver;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private final IntentFilter intentFilter = new IntentFilter();
 
     View.OnClickListener listItemOnClick;
+    Button backButton;
 
     private MainActivityController mMainActivityController;
 
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        mMainActivityController.disconnect();
         //init the BR to receive Broadcasts for WifiDirect
         receiver = new BroadcastReceiver(manager, channel, this, mAdapter, mMainActivityController.peerListListener);
         registerReceiver(receiver, intentFilter);
@@ -151,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
                 loadingDialog.show(getSupportFragmentManager(), "load Dialog");
             }
         };
+
 
     }
 
