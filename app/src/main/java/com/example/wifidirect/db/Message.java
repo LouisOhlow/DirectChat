@@ -5,17 +5,19 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
-@Entity(tableName = "message",
-        primaryKeys = { "message_id", "conversation_id" },
-        indices = { @Index("conversation_id") },
-        foreignKeys = @ForeignKey(entity = Macaddress.class,
-                parentColumns = "id",
-                childColumns = "conversation_id",
-                onDelete = ForeignKey.CASCADE))
+@Entity(tableName = "message")
+        //primaryKeys = { "message_id", "conversation_id" },
+        //indices = { @Index("conversation_id") },
+        //foreignKeys = @ForeignKey(entity = Macaddress.class,
+        //        parentColumns = "id",
+        //        childColumns = "conversation_id",
+        //        onDelete = ForeignKey.CASCADE))
 public class Message {
 
 
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "message_id")
     private int messageId;
 

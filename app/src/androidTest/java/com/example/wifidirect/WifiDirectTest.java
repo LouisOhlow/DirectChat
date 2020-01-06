@@ -77,18 +77,14 @@ public class WifiDirectTest {
 
     @Test
     public void testThatCanAddAndRetrieveMessage() {
-        Macaddress macaddress = new Macaddress();
-        macaddress.setPartnermacaddress("12345");
-        macaddressDao.createMacaddress(macaddress);
-        Integer id = macaddress.getId();
 
-        Message message1 = new Message(id, "hallo", "00:02", true);
+        Message message1 = new Message(1, "hallo", "00:02", true);
         messageDao.createMessage(message1);
 
-        Message message2 = new Message(id, "hey", "00:03", false);
+        Message message2 = new Message(1, "hey", "00:03", false);
         messageDao.createMessage(message2);
 
-        List<Message> messages = messageDao.loadChatHistory(id);
+        List<Message> messages = messageDao.loadChatHistory(1);
         assertFalse(messages.isEmpty());
         assertEquals(2, messages.size());
         assertEquals(messages.get(0).getText(),"hallo");
