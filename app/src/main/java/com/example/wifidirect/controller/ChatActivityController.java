@@ -169,7 +169,7 @@ public class ChatActivityController {
     }
 
     // TODO Arthur testing
-    private String getMacAddr() {
+    public String getMacAddr() {
         Log.d(TAG, "getting MAC address..");
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
