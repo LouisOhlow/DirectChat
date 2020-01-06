@@ -42,36 +42,32 @@ public class BroadcastReceiver extends android.content.BroadcastReceiver {
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
 
             }
+
         } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
             Log.d(TAG, "WIFI_P2P_PEERS_CHANGED_ACTION");
 
             if (manager != null) {
                 manager.requestPeers(channel, peerlistListener);
             }
-            Toast.makeText(context, "Wifi peer list has changed", Toast.LENGTH_SHORT).show();
 
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
             Log.d(TAG, "WIFI_P2P_CONNECTION_CHANGED_ACTION");
 
-            Toast.makeText(context, "Connection state has changed", Toast.LENGTH_SHORT).show();
             if(manager==null) {
                 return;
             }
-                NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
-
-                if(networkInfo.isConnected()){
-                    manager.requestConnectionInfo(channel, mMainActivityController.connectionInfoListener);
-                    Toast.makeText(context, "device connected", Toast.LENGTH_LONG).show();
-
-                }else{
-                            Toast.makeText(context, "device disconnected", Toast.LENGTH_LONG).show();
-                }
+            manager.requestConnectionInfo(channel, mMainActivityController.connectionInfoListener);
+            NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+            if(networkInfo.isConnected()){
+            }else{
+                mMainActivityController.isConnected = false;
+            }
 
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             Log.d(TAG, "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION");
+
             WifiP2pDevice myDevice =(WifiP2pDevice)intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
             mMainActivityController.deviceName = myDevice.deviceName;
-            Toast.makeText(context, "This device changed action", Toast.LENGTH_SHORT).show();
         }
     }
 }

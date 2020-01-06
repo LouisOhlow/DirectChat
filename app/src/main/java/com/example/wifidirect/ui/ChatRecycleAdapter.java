@@ -49,7 +49,6 @@ public class ChatRecycleAdapter extends RecyclerView.Adapter<ChatRecycleAdapter.
 
     @Override
     public int getItemViewType(int position) {
-        Log.d(TAG, "position role: " + messages.get(position).getRole());
         if(messages.get(position).getRole()){
             return 0;
         }
@@ -63,7 +62,6 @@ public class ChatRecycleAdapter extends RecyclerView.Adapter<ChatRecycleAdapter.
     public ChatRecycleAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ChatRecycleAdapter.MyViewHolder vh = null;
         // create a new view
-        Log.d(TAG, "viewType: " + viewType);
         switch (viewType) {
             case 0:
                 TextView v1 = (TextView) LayoutInflater.from(parent.getContext())

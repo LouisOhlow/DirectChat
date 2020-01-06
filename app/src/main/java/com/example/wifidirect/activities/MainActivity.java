@@ -61,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
         mMainActivityController.initialize(channel, manager, this);
         mMainActivityController.startSearch();
 
-        mMainActivityController.turnOnWifi(); //TODO turn on location
-
         loadingDialog = new LoadingDialog();
         loadingDialog.setCancelable(false);
 
@@ -73,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         initButtons();
         setupRecyclerView();
         setupIntents();
+
         mMainActivityController.disconnect();
     }
 

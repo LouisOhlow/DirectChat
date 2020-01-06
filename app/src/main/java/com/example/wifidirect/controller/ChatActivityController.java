@@ -15,7 +15,6 @@ import com.example.wifidirect.serverclient.SendReceive;
 import com.example.wifidirect.activities.ChatActivity;
 
 import java.net.NetworkInterface;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,7 +54,7 @@ public class ChatActivityController {
         return ChatActivityController.mChatActivityController;
     }
 
-    public void init(final ChatActivity chatActivity, Handler handler){
+    public void init(final ChatActivity chatActivity, final Handler handler){
         Log.d(TAG, "init Chatactivity controller");
 
         this.sendReceive = new SendReceive(mMainActivityController.socket);
@@ -72,12 +71,22 @@ public class ChatActivityController {
 
         Log.d(TAG, "connection status: " + mMainActivityController.socket.isConnected());
 
-        dbHandler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(android.os.Message message) {
-               chatActivity.loadChat();
+        final Handler updateHandler = new Handler();
+        final int delay = 1000; //milliseconds
+
+        updateHandler.postDelayed(new Runnable(){
+            public void run(){
+                //do something
+                if(!mMainActivityController.isConnected){
+                    chatActivity.closeActivity();
+                    mMainActivityController.disconnect();
+                }
+                if(!isLoadingDB){
+                    loadChathistory("load-----" + PARTNERMACADDRESS + "-----load");
+                    chatActivity.loadChat();}
+                updateHandler.postDelayed(this, delay);
             }
-        };
+        }, delay);
     }
 
     public void receiveMessage(String tempMessage) {
@@ -148,6 +157,7 @@ public class ChatActivityController {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Looper.prepare();
                 Integer conversationId = macaddressDao.getIdIfExists(PARTNERMACADDRESS);
                 if (conversationId != null) {
                     Log.d(TAG, "Found existing Mac Address with id" + conversationId);
@@ -156,9 +166,6 @@ public class ChatActivityController {
                     Log.d(TAG, "transferred chatmessages: " + mChatActivityController.messages.size());
                     Log.d(TAG, "Loaded chat history");
                     Log.d(TAG, "size: " + messages.size());
-                    for(int i = 0; i < messages.size(); i++){
-                        Log.d(TAG, "added message to UI: " + messages.get(i).getText());
-                    }
                 } else {
                     Macaddress newMac = new Macaddress();
                     newMac.setPartnermacaddress(PARTNERMACADDRESS);
@@ -168,7 +175,6 @@ public class ChatActivityController {
                 mChatActivityController.isLoadingDB = false;
             }
         }).start();
-
     }
 
     // TODO Arthur testing

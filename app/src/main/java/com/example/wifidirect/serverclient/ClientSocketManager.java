@@ -42,6 +42,8 @@ public class ClientSocketManager extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.d(TAG, "could not connect to Server");
+                //mMainActivityController.serverConnected(false, socket);
+
                 i++;
             }
         }

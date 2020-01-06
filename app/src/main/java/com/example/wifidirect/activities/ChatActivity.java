@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.wifidirect.R;
 import com.example.wifidirect.ui.ChatRecycleAdapter;
@@ -97,6 +97,11 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    public void closeActivity(){
+        Toast.makeText(getApplicationContext(), "lost connection", Toast.LENGTH_LONG).show();
+        finish();
     }
 
     public void loadChat() {
