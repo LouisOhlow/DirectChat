@@ -2,16 +2,15 @@ package com.example.wifidirect.controller;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.net.wifi.WifiManager;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
-
 
 import com.example.wifidirect.serverclient.ClientSocketManager;
 import com.example.wifidirect.serverclient.ServerSocketManager;
@@ -38,6 +37,8 @@ public class MainActivityController {
 
     Socket socket;
 
+    public boolean isConnected = false;
+
     public WifiP2pManager.ConnectionInfoListener connectionInfoListener;
     public String deviceName;
 
@@ -58,6 +59,10 @@ public class MainActivityController {
                     ClientSocketManager client = new ClientSocketManager(groupOwnerAddress);
                     client.start();
                 }
+                else{
+                    Log.d(TAG, " not connected");
+                    isConnected = false;
+                }
             }
         };
 
@@ -71,20 +76,36 @@ public class MainActivityController {
         return MainActivityController.mMainActivityController;
     }
 
-    public void initialize(WifiP2pManager.Channel channel, WifiP2pManager manager, MainActivity mainActivity) {
+    public void initialize(final WifiP2pManager.Channel channel, final WifiP2pManager manager, MainActivity mainActivity) {
         this.channel = channel;
         this.manager = manager;
         this.mainActivity = mainActivity;
         context = mainActivity.getApplicationContext();
+
+        final Handler updateHandler = new Handler();
+        final int delay = 7000; //milliseconds
+
+        updateHandler.postDelayed(new Runnable(){
+            public void run(){
+                //do something
+                startSearch();
+                updateHandler.postDelayed(this, delay);
+            }
+        }, delay);
     }
 
     public void disconnect(){
+        Toast.makeText(context, "could not connect", Toast.LENGTH_LONG).show();
+        if(!mainActivity.loadingDialog.isHidden()){
+            mainActivity.loadingDialog.dismiss();}
+
         if (manager != null && channel != null) {
             manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
                     Log.d(TAG, "removeGroup onSuccess -");
                     startSearch();
+                    isConnected = false;
                 }
 
                 @Override
@@ -103,14 +124,6 @@ public class MainActivityController {
                     Log.d(TAG, "cancelConnect onSuccess -");
                 }
             });*/
-        }
-    }
-
-    public void turnOnWifi(){
-        WifiManager mWifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (!mWifiManager.isWifiEnabled()) mWifiManager.setWifiEnabled(true);
-        else {
-            Toast.makeText(context, "please turn on wifi", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -155,23 +168,24 @@ public class MainActivityController {
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = peer.deviceAddress;
         config.wps.setup = WpsInfo.PBC;
+        isConnected = true;
+            manager.connect(channel, config, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
+                    Log.d(TAG, "connected succesfully");
+                    Toast.makeText(context, "connected succesfully",
+                            Toast.LENGTH_SHORT).show();
+                }
 
-        manager.connect(channel, config, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
-                Log.d(TAG, "connected succesfully");
-                Toast.makeText(context, "connected succesfully",
-                        Toast.LENGTH_SHORT).show();
-            }
+                @Override
+                public void onFailure(int reason) {
+                    Toast.makeText(context, "Connect failed. Retry.",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
-            @Override
-            public void onFailure(int reason) {
-                Toast.makeText(context, "Connect failed. Retry.",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 
     // #TODO Arthur4testing
     public String[] getPeerNames(){
@@ -191,13 +205,12 @@ public class MainActivityController {
     public void serverConnected(boolean serverConnected, Socket socket){
         this.socket = socket;
         if(serverConnected) {
+            isConnected = true;
             mainActivity.startChatView();
         }
         else{
+            isConnected = false;
             disconnect();
-        }
-        if(!mainActivity.loadingDialog.isHidden()){
-            mainActivity.loadingDialog.dismiss();
         }
     }
 }

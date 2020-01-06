@@ -15,7 +15,7 @@ public class SendReceive extends Thread{
     private Handler handler;
 
     private static final int MESSAGE_READ = 1;
-    private String TAG = "wifidirect: SendReceive ";
+    private String TAG = "Wifidirect: SendReceive ";
 
     public SendReceive(Socket socket){
         this.socket = socket;

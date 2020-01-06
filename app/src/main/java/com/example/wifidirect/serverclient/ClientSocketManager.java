@@ -1,6 +1,8 @@
 package com.example.wifidirect.serverclient;
 
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.example.wifidirect.controller.MainActivityController;
@@ -15,6 +17,8 @@ public class ClientSocketManager extends Thread {
     String hostAdd;
     SendReceive sendReceive;
 
+    boolean isConnecting = true;
+
     String TAG = "Wifidirect: ClientSockerManager";
     MainActivityController mMainActivityController;
 
@@ -26,15 +30,23 @@ public class ClientSocketManager extends Thread {
     @Override
     public void run() {
         super.run();
+
         mMainActivityController = MainActivityController.getSC();
-        try {
-            socket.connect(new InetSocketAddress(hostAdd, 3434), 500);
-            Log.d(TAG, "connecting to Server...");
-            mMainActivityController.serverConnected(true, socket);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.d(TAG, "could not connect to Server");
-            mMainActivityController.serverConnected(false, socket);
+        int i = 0;
+        while(i<10){
+            try {
+                socket.connect(new InetSocketAddress(hostAdd, 3434), 500);
+                Log.d(TAG, "connecting to Server...");
+                mMainActivityController.serverConnected(true, socket);
+                i=10;
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "could not connect to Server");
+                //mMainActivityController.serverConnected(false, socket);
+
+                i++;
+            }
         }
     }
+
 }
