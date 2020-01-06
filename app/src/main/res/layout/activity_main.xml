@@ -5,26 +5,30 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:backgroundTint="@color/colorDark">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorDark">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorDark"
             android:gravity="center_horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Chats"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:textSize="20dp"
+                android:textColor="@color/colorPrimary"
+                android:fontFamily="@font/roboto_bold"
                 >
 
             </androidx.appcompat.widget.AppCompatTextView>
@@ -37,11 +41,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:backgroundTint="@drawable/logo_trans"
+        android
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

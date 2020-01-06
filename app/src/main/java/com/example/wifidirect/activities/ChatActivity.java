@@ -82,6 +82,8 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+
+
         //#TODO load db with MAC Address and close dialog window after loading
     }
 
