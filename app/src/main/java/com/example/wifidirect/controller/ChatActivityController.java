@@ -177,7 +177,7 @@ public class ChatActivityController {
         }).start();
     }
 
-    private String getMacAddr() {
+    public String getMacAddr() {
         Log.d(TAG, "getting MAC address..");
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
