@@ -1,23 +1,37 @@
 package com.example.wifidirect.activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.wifidirect.BroadcastReceiver;
 import com.example.wifidirect.ui.LoadingDialog;
 import com.example.wifidirect.controller.MainActivityController;
 import com.example.wifidirect.ui.MyAdapter;
 import com.example.wifidirect.R;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private final IntentFilter intentFilter = new IntentFilter();
 
     View.OnClickListener listItemOnClick;
+    Button backButton;
 
     private MainActivityController mMainActivityController;
 
@@ -40,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
     public TextView p2pInfoText;
 
     public LoadingDialog loadingDialog;
+
+    boolean gps_enabled = false;
+    boolean network_enabled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,12 +91,13 @@ public class MainActivity extends AppCompatActivity {
         setupIntents();
 
         mMainActivityController.disconnect();
+        checkForPermission();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
+        mMainActivityController.disconnect();
         //init the BR to receive Broadcasts for WifiDirect
         receiver = new BroadcastReceiver(manager, channel, this, mAdapter, mMainActivityController.peerListListener);
         registerReceiver(receiver, intentFilter);
@@ -90,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
         //Disable receiver
         unregisterReceiver(receiver);
         Log.d(TAG, "Mainactivity - onPause");
@@ -151,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
                 loadingDialog.show(getSupportFragmentManager(), "load Dialog");
             }
         };
-
     }
 
     public void startChatView(){
@@ -159,6 +176,23 @@ public class MainActivity extends AppCompatActivity {
 
         Intent chatStartIntent = new Intent(this, ChatActivity.class);
         this.startActivity(chatStartIntent);
+    }
+
+    public void checkForPermission(){
+        PermissionListener permissionListener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                //Toast.makeText(MainActivity.this.getApplicationContext(), "permission given", Toast.LENGTH_SHORT).show();
+
+            }
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions) {
+               Toast.makeText(MainActivity.this.getApplicationContext() , "no location permission", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        TedPermission.with(MainActivity.this).setPermissionListener(permissionListener)
+                .setPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION).check();
     }
 }
 

@@ -2,7 +2,6 @@ package com.example.wifidirect.activities;
 
 import android.os.Bundle;
 
-import com.example.wifidirect.BroadcastReceiver;
 import com.example.wifidirect.controller.ChatActivityController;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,8 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Message;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,9 @@ public class ChatActivity extends AppCompatActivity {
 
     TextView messageText;
     TextView sendButton;
+    public TextView chatName;
+    ImageButton backButton;
+
 
     public ChatRecycleAdapter mAdapter;
     private RecyclerView recyclerView;
@@ -49,7 +53,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_test_view);
+        setContentView(R.layout.activity_chat);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -63,6 +67,8 @@ public class ChatActivity extends AppCompatActivity {
 
         messageText = findViewById(R.id.message);
         sendButton = findViewById(R.id.sendButton);
+        chatName = findViewById(R.id.chatname);
+        backButton = (ImageButton) findViewById(R.id.backbutton);
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +79,12 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
-        //#TODO load db with MAC Address and close dialog window after loading
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeActivity();
+            }
+        });
     }
 
     @Override
@@ -105,13 +116,17 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void loadChat() {
+        try{
         Log.d(TAG, "updated recyclerview by "+ mChatActivityController.messages.size() + " items");
         mAdapter.update(mChatActivityController.messages);
         if((mChatActivityController.messages.size()-1) > 0){
             recyclerView.smoothScrollToPosition(mChatActivityController.messages.size()-1);
         }
         Log.d(TAG, "updated chat history");
-        loadingDBDialog.dismiss();
+        loadingDBDialog.dismiss();}
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void setupRecyclerView(){

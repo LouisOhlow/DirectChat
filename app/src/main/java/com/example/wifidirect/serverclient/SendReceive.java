@@ -3,6 +3,9 @@ package com.example.wifidirect.serverclient;
 import android.os.Handler;
 import android.util.Log;
 
+import com.example.wifidirect.controller.ChatActivityController;
+import com.example.wifidirect.controller.MainActivityController;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,6 +19,7 @@ public class SendReceive extends Thread{
 
     private static final int MESSAGE_READ = 1;
     private String TAG = "Wifidirect: SendReceive ";
+    private MainActivityController mMainActivityController;
 
     public SendReceive(Socket socket){
         this.socket = socket;
@@ -57,7 +61,10 @@ public class SendReceive extends Thread{
             Log.d(TAG, "successfully wrote message to server");
 
         } catch (IOException e){
+            mMainActivityController = MainActivityController.getSC();
+            mMainActivityController.isConnected = false;
             Log.d(TAG, "failed to write message to server");
+
             e.printStackTrace();
         }
     }
