@@ -41,8 +41,6 @@ public class ChatActivityController {
 
     public boolean isLoadingDB = true;
 
-    Handler dbHandler;
-
     private ChatActivityController(){
         mMainActivityController = MainActivityController.getSC();
     }
@@ -82,7 +80,7 @@ public class ChatActivityController {
                     mMainActivityController.disconnect();
                 }
                 if(!isLoadingDB){
-                    loadChathistory("load-----" + PARTNERMACADDRESS + "-----load");
+                    loadChathistory("load-----" + PARTNERMACADDRESS + "-----" + deviceNamePartner);
                     chatActivity.loadChat();}
                 updateHandler.postDelayed(this, delay);
             }
@@ -98,7 +96,7 @@ public class ChatActivityController {
         }
         else {
             Log.d(TAG, "adding message to chat");
-            loadChathistory("load-----" + PARTNERMACADDRESS + "-----load");
+            loadChathistory("load-----" + PARTNERMACADDRESS + "-----" + deviceNamePartner);
             chatActivity.loadChat();
             saveMessage(tempMessage, false);
         }
@@ -121,7 +119,7 @@ public class ChatActivityController {
         }
         else {
             saveMessage(message, true);
-            loadChathistory("load-----" + PARTNERMACADDRESS + "-----load");
+            loadChathistory("load-----" + PARTNERMACADDRESS + "-----" + deviceNamePartner);
             chatActivity.loadChat();
         }
     }
@@ -152,6 +150,8 @@ public class ChatActivityController {
         PARTNERMACADDRESS = partnerInfos[1];
         deviceNamePartner = partnerInfos[2];
 
+        chatActivity.chatName.setText(deviceNamePartner.split("Phone]")[1]);
+
         Log.d(TAG, "loading chat history by MAC address: " + PARTNERMACADDRESS);
 
         new Thread(new Runnable() {
@@ -177,7 +177,6 @@ public class ChatActivityController {
         }).start();
     }
 
-    // TODO Arthur testing
     private String getMacAddr() {
         Log.d(TAG, "getting MAC address..");
         try {

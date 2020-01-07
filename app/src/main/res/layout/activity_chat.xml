@@ -9,22 +9,51 @@
         android:id="@+id/chatBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:backgroundTint="@color/colorDark"
+        >
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight=".7"
-            android:background="?attr/colorPrimary">
 
+            >
 
-            <ImageButton
-                android:id="@+id/imageButton"
+            <RelativeLayout
+                android:layout_gravity="left"
+                android:id="@+id/container"
+                android:layout_width="50dp"
+                android:layout_height="50dp" >
+                <ImageButton
+                    android:layout_alignParentLeft="true"
+                    android:id="@+id/backbutton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".1"
+                    app:srcCompat="@drawable/arrowback"
+                    android:backgroundTint="@color/colorDarker"
+                    android:scaleType="fitXY"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_gravity="left"
+                android:id="@+id/container2"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight=".1"
-                app:srcCompat="@drawable/arrowback" />
+                android:layout_height="50dp" >
+                <TextView
+                    android:layout_alignParentLeft="true"
+                    android:id="@+id/chatname"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".1"
+                    android:scaleType="fitXY"
+                    android:text="Name"
+                    android:textSize="20dp"
+                    android:gravity="center"
+                    android:textColor="@android:color/white"/>
+            </RelativeLayout>
+
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -35,6 +64,7 @@
         android:layout_above="@+id/linearLayout"
         android:layout_below="@+id/chatBarLayout"
         android:id="@+id/messageRec"
+        android:background="@color/colorDark"
         >
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -44,18 +74,23 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:id="@+id/linearLayout"
+        android:background="@color/colorDarker"
         >
 
         <EditText
             android:id="@+id/message"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
+            android:drawable="@drawable/edittext"
+            android:textColor="@android:color/white"
             />
         <Button
             android:id="@+id/sendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="send"
+            android:backgroundTint="@color/colorDark"
+            android:textColor="@android:color/white"
             />
     </LinearLayout>
 </RelativeLayout>

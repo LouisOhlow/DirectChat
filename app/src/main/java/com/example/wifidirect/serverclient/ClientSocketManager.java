@@ -35,7 +35,7 @@ public class ClientSocketManager extends Thread {
         int i = 0;
         while(i<10){
             try {
-                socket.connect(new InetSocketAddress(hostAdd, 3434), 500);
+                socket.connect(new InetSocketAddress(hostAdd, 9352), 500);
                 Log.d(TAG, "connecting to Server...");
                 mMainActivityController.serverConnected(true, socket);
                 i=10;

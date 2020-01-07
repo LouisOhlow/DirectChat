@@ -25,7 +25,7 @@ public class ServerSocketManager extends Thread {
         super.run();
         Looper.prepare();
             try{
-                serverSocket = new ServerSocket(3434);
+                serverSocket = new ServerSocket(9352);
                 Log.d(TAG, "connecting to Server...");
                 socket = serverSocket.accept();
                 Log.d(TAG, "successfully connected to Client...");

@@ -89,13 +89,14 @@ public class MainActivityController {
             public void run(){
                 //do something
                 startSearch();
+
                 updateHandler.postDelayed(this, delay);
             }
         }, delay);
     }
 
     public void disconnect(){
-        Toast.makeText(context, "could not connect", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "searching for peers", Toast.LENGTH_LONG).show();
         if(!mainActivity.loadingDialog.isHidden()){
             mainActivity.loadingDialog.dismiss();}
 
@@ -174,29 +175,39 @@ public class MainActivityController {
                 public void onSuccess() {
                     // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
                     Log.d(TAG, "connected succesfully");
-                    Toast.makeText(context, "connected succesfully",
-                            Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailure(int reason) {
-                    Toast.makeText(context, "Connect failed. Retry.",
-                            Toast.LENGTH_SHORT).show();
+                    startSearch();
                 }
             });
+        final Handler timeoutHandler = new Handler();
+        final int delay = 15000; //milliseconds
+
+        timeoutHandler.postDelayed(new Runnable(){
+            public void run(){
+                //do something
+                if(!mainActivity.loadingDialog.isHidden() && !isConnected){
+                    mainActivity.loadingDialog.dismiss();
+                    Toast.makeText(context, "could not connect", Toast.LENGTH_LONG).show();
+                    disconnect();
+                }
+            }
+        }, delay);
         }
 
-
-    // #TODO Arthur4testing
     public String[] getPeerNames(){
         Log.d(TAG, "getting peer list..");
         String[] peerNames = new String[peers.size()];
 
+        int k = 0;
         for (int i = 0; i < peers.size(); i++) {
             String tempName = peers.get(i).deviceName;
 
             if(tempName.contains("[Phone]")) {
-                peerNames[i] = tempName.split("Phone]")[1];
+                peerNames[k] = tempName.split("Phone]")[1];
+                k++;
             }
         }
         return peerNames;
@@ -209,6 +220,7 @@ public class MainActivityController {
             mainActivity.startChatView();
         }
         else{
+            Toast.makeText(context, "could not connect", Toast.LENGTH_LONG).show();
             isConnected = false;
             disconnect();
         }

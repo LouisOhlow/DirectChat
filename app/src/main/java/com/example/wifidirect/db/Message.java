@@ -8,12 +8,12 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "message")
-        //primaryKeys = { "message_id", "conversation_id" },
-        //indices = { @Index("conversation_id") },
-        //foreignKeys = @ForeignKey(entity = Macaddress.class,
-        //        parentColumns = "id",
-         //       childColumns = "conversation_id",
-         //       onDelete = ForeignKey.CASCADE))
+//primaryKeys = { "message_id", "conversation_id" },
+//indices = { @Index("conversation_id") },
+//foreignKeys = @ForeignKey(entity = Macaddress.class,
+//        parentColumns = "id",
+//        childColumns = "conversation_id",
+//        onDelete = ForeignKey.CASCADE))
 public class Message {
 
 
