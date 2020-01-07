@@ -199,17 +199,21 @@ public class MainActivityController {
 
     public String[] getPeerNames(){
         Log.d(TAG, "getting peer list..");
-        String[] peerNames = new String[peers.size()];
 
+        ArrayList<String> tempNames = new ArrayList<>();
         int k = 0;
         for (int i = 0; i < peers.size(); i++) {
             String tempName = peers.get(i).deviceName;
 
             if(tempName.contains("[Phone]")) {
-                peerNames[k] = tempName.split("Phone]")[1];
-                k++;
+                tempNames.add(tempName.split("Phone]")[1]);
             }
         }
+        String[] peerNames = new String[tempNames.size()];
+        for(int i = 0; i<tempNames.size(); i++){
+            peerNames[i] = tempNames.get(i);
+        }
+        Log.d(TAG, "size: " + peerNames.length);
         return peerNames;
     }
 
