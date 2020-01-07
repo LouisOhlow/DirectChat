@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private final IntentFilter intentFilter = new IntentFilter();
 
     View.OnClickListener listItemOnClick;
-    Button backButton;
 
     private MainActivityController mMainActivityController;
 
@@ -52,12 +51,7 @@ public class MainActivity extends AppCompatActivity {
     public MyAdapter mAdapter;
     private RecyclerView recyclerView;
 
-    public TextView p2pInfoText;
-
     public LoadingDialog loadingDialog;
-
-    boolean gps_enabled = false;
-    boolean network_enabled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

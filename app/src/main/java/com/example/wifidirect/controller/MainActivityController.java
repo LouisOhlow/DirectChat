@@ -34,6 +34,7 @@ public class MainActivityController {
     private MainActivity mainActivity;
 
     private ArrayList<WifiP2pDevice> peers;
+    private ArrayList<WifiP2pDevice> tempNames;
 
     Socket socket;
 
@@ -84,6 +85,8 @@ public class MainActivityController {
 
         final Handler updateHandler = new Handler();
         final int delay = 7000; //milliseconds
+
+        tempNames = new ArrayList<>();
 
         updateHandler.postDelayed(new Runnable(){
             public void run(){
@@ -165,7 +168,7 @@ public class MainActivityController {
     };
 
     public void connectToPeer(int itemPosition, WifiP2pManager manager, WifiP2pManager.Channel channel){
-        WifiP2pDevice peer = peers.get(itemPosition);
+        WifiP2pDevice peer = tempNames.get(itemPosition);
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = peer.deviceAddress;
         config.wps.setup = WpsInfo.PBC;
@@ -200,18 +203,17 @@ public class MainActivityController {
     public String[] getPeerNames(){
         Log.d(TAG, "getting peer list..");
 
-        ArrayList<String> tempNames = new ArrayList<>();
-        int k = 0;
+        tempNames.clear();
         for (int i = 0; i < peers.size(); i++) {
             String tempName = peers.get(i).deviceName;
 
             if(tempName.contains("[Phone]")) {
-                tempNames.add(tempName.split("Phone]")[1]);
+                tempNames.add(peers.get(i));
             }
         }
         String[] peerNames = new String[tempNames.size()];
         for(int i = 0; i<tempNames.size(); i++){
-            peerNames[i] = tempNames.get(i);
+            peerNames[i] = tempNames.get(i).deviceName.split("Phone]")[1];
         }
         Log.d(TAG, "size: " + peerNames.length);
         return peerNames;
